@@ -1,4 +1,4 @@
-name: Test
+name: Tests
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       - uses: shivammathur/setup-php@v1
         with:
           php-version: ${{ matrix.php }}
-          coverage: pcov
+          coverage: none
 
       - name: Install dependencies
         run: |
