@@ -13,13 +13,17 @@ jobs:
             matrix:
                 php: ['7.2', '7.3', '7.4']
 
-        # Steps represent a sequence of tasks that will be executed as part of the job
+        name: PHP ${{ matrix.php }} tests
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - uses: actions/checkout@v2
 
-            - name: Run composer install
-                  run: composer install --prefer-dist -o
+              # use PHP of specific version
+            - uses: shivammathur/setup-php@v1
+               with:
+                 php-version: ${{ matrix.php }}
+                 coverage: none # disable xdebug, pcov
 
-            - name: Execute tests
-                  run: vendor/bin/phpunit --colors='always'
+            - run: composer install --no-progress
+
+            - run: vendor/bin/phpunit --colors=always
