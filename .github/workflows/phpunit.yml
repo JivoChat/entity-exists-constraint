@@ -3,8 +3,7 @@ name: Test
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  pull_request: null
 
 jobs:
   # This workflow contains a single job called "build"
