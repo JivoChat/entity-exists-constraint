@@ -20,9 +20,9 @@ jobs:
 
         # use PHP of specific version
       - uses: shivammathur/setup-php@v1
-          with:
-            php-version: ${{ matrix.php }}
-            coverage: none # disable xdebug, pcov
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: pcov
 
       - run: composer install --no-progress
 
