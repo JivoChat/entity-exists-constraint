@@ -27,4 +27,4 @@ jobs:
 
       - run: composer install --no-progress
 
-      - run: vendor/bin/phpunit --colors=always
+      - run: vendor/bin/phpunit
