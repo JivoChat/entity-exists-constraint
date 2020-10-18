@@ -102,7 +102,7 @@ Then register the services with:
 
 ```yaml
 services:
-  JivoChat\Validator\Constraint\EntityExists:
-    arguments: ['@doctrine.orm.entity_manager']
-    tags: [ 'validator.constraint_validator' ]
+  JivoChat\Validator\Constraint\EntityExistsValidator:
+      arguments: [ '@doctrine' ]
+      tags: [ 'validator.constraint_validator' ]
 ```
