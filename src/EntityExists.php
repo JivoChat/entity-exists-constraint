@@ -7,16 +7,14 @@
  *     private $userId;
  *     В данном случае валидатор попытается найти первичные ключи сущности User и если название первичного
  *     ключа совпадает с названием параметра ($userId), сделает запрос в базу с попыткой найти запись.
- *     В случае если запись не найдена будет выброшено исключение.
  *
- *     //@EntityExists(entity="Entity\Agent", mapping={"agentId": "accountId"}, exception=false)
+ *     //@EntityExists(entity="Entity\Agent", mapping={"agentId": "accountId"}, exception=true)
  *     private $accountId;
  *     Предположим что Agent содержит составной ключ userId, agentId. Валидатор по мапингу определит что значение
  *     для agentId надо взять из параметра $accountId. Для userId валидатор попытается найти параметр $userId в Dto.
  *     Если параметр найден, то значение будет взято из него. Если нет, то будет выкинуто исключение что не найдены
  *     значения для ключа.
- *     Параметр exception=false говорит о том, что в случае если сущность не найдена в базе, исключение не будет
- *     выкинуто, а будет записана стандартная ошибка валидации.
+ *     Параметр exception=true говорит о том, что в случае если сущность не найдена в базе будет выброшено исключение.
  *
  *     //@EntityExists(entity="Entity\Transaction", mapping={"userId": "userId"}, persistentManager="global")
  *     private $transactionId;
@@ -31,12 +29,13 @@ declare(strict_types=1);
 
 namespace JivoChat\Validator\Constraint;
 
+use JivoChat\Validator\Constraint\Exception\NotFound;
 use Symfony\Component\Validator\Constraint;
 
 /**
  * @Annotation
  */
-final class EntityExists extends Constraint
+class EntityExists extends Constraint
 {
     /** @var string */
     public $message = 'Entity "%entity%" with parameter "%value%" does not exist.';
@@ -51,5 +50,10 @@ final class EntityExists extends Constraint
     public $persistentManager = null;
 
     /** @var bool */
-    public $exception = true;
+    public $exception = false;
+
+    public function throwException(): void
+    {
+        throw NotFound::entity($this->entity);
+    }
 }

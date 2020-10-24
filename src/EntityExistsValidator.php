@@ -180,7 +180,7 @@ class EntityExistsValidator extends ConstraintValidator
     public function throwViolation(EntityExists $constraint, $value, array $mapping = []): void
     {
         if ($constraint->exception === true) {
-            throw NotFound::entity($constraint->entity);
+            $constraint->throwException();
         }
 
         $this->context->buildViolation($constraint->message)

@@ -26,7 +26,7 @@ final class RequestDto
 
     /**
      * @Assert\NotBlank
-     * @EntityExists(entity="Entity\Post", mapping={"postId": "messageId"}, exception=false)
+     * @EntityExists(entity="Entity\Post", mapping={"postId": "messageId"}, exception=true)
      *
      * @var int
      * Let's assume that Post has composite primary key userId, postId. Because of the mapping, the validator knows that
@@ -71,7 +71,7 @@ final class RequestDto
 You can use default EntityExists constrain from package or make your own to change default parameters.
 
 ```php
-final class EntityExists extends Constraint
+class EntityExists extends Constraint
 {
     /** @var string */
     public $message = 'Entity "%entity%" with parameter "%value%" does not exist.';
@@ -87,10 +87,28 @@ final class EntityExists extends Constraint
     public $persistentManager = null;
 
     /** @var bool */
-    public $exception = true;
-    // By default if entity not found, exception will be thrown. It is good then you want to show 404 page
+    public $exception = false;
+    // If it is true, exception will be thrown. It is good then you want to show 404 page
+
+    public function throwException(): void
+    {
+        throw NotFound::entity($this->entity);
+    }
 }
 ```
+
+## Full example
+```php
+ $dto = new RequestDto();
+ $dto->setUserId($request->request->get('user_id'));
+ $dto->setMessageId($request->request->get('message_id'));
+ $dto->setTransactionId($request->request->get('transaction_id'));
+
+ $violationList = $this->validator->validate($requestDto);
+ if ($violationList->count()) {
+    ...
+ }
+````
 
 ## Install
 
