@@ -63,7 +63,7 @@ class EntityExistsValidatorTest extends TestCase
         $validator = new EntityExistsValidator($registry);
         $validator->initialize($this->context);
 
-        $resultRegistry = $validator->findManager('StdClass', 'global');
+        $resultRegistry = $validator->findManager($registry, 'StdClass', 'global');
 
         $this->assertSame($registry->getManager('global'), $resultRegistry);
     }
@@ -77,7 +77,7 @@ class EntityExistsValidatorTest extends TestCase
         $validator = new EntityExistsValidator($registry);
         $validator->initialize($this->context);
 
-        $resultRegistry = $validator->findManager('StdClass', null);
+        $resultRegistry = $validator->findManager($registry, 'StdClass', null);
 
         $this->assertSame($registry->getManager('default'), $resultRegistry);
     }
@@ -92,7 +92,7 @@ class EntityExistsValidatorTest extends TestCase
         $validator = new EntityExistsValidator($registry);
         $validator->initialize($this->context);
 
-        $resultRegistry = $validator->findManager('StdEntity', null);
+        $resultRegistry = $validator->findManager($registry, 'StdEntity', null);
 
         $this->assertSame($registry->getManager('global'), $resultRegistry);
     }
