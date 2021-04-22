@@ -108,7 +108,7 @@ class EntityExistsValidatorTest extends TestCase
         }
         $configurationContainsEntity = $this->createMock(Configuration::class);
         $configurationContainsEntity->method('getEntityNamespaces')
-                                    ->willReturn($nameSpaces);
+            ->willReturn($nameSpaces);
 
         $managerContainsEntity = $this->createMock(EntityManagerInterface::class);
         $managerContainsEntity->method('getConfiguration')->willReturn($configurationContainsEntity);

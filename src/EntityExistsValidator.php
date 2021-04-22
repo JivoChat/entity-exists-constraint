@@ -16,9 +16,9 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 use function array_flip;
 use function array_merge;
+use function assert;
 use function call_user_func_array;
 use function class_exists;
-use function implode;
 use function in_array;
 use function method_exists;
 use function sprintf;
@@ -26,8 +26,7 @@ use function ucfirst;
 
 class EntityExistsValidator extends ConstraintValidator
 {
-    /** @var ManagerRegistry */
-    private $registry;
+    private ManagerRegistry $registry;
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -35,7 +34,7 @@ class EntityExistsValidator extends ConstraintValidator
     }
 
     /**
-     * @param EntityExists $constraint
+     * @param Constraint|EntityExists $constraint
      *
      * @throws NotFound
      *
@@ -55,15 +54,19 @@ class EntityExistsValidator extends ConstraintValidator
             return;
         }
 
-        $entityManager = $this->findManager($constraint->entity, $constraint->persistentManager);
+        $entityManager = $this->findManager(
+            $this->registry,
+            $constraint->entity,
+            $constraint->persistentManager
+        );
         $primaryKeys   = $this->getPrimaryKeys($constraint->entity, $entityManager);
 
         $this->entityHasPrimaryKey($this->context->getPropertyName(), $primaryKeys, $constraint->mapping);
 
-        $mapping  = array_merge($primaryKeys, $constraint->mapping);
-        $criteria = $this->makeCriteria($value, array_flip($mapping));
-        /** @var EntityRepository $repository */
+        $mapping    = array_merge($primaryKeys, $constraint->mapping);
+        $criteria   = $this->makeCriteria($value, array_flip($mapping));
         $repository = $entityManager->getRepository($constraint->entity);
+        assert($repository instanceof EntityRepository);
 
         $count = $repository->count($criteria);
 
@@ -99,29 +102,30 @@ class EntityExistsValidator extends ConstraintValidator
         return $normalizedPrimaryKeys;
     }
 
-    public function findManager(string $entityClass, ?string $persistentManager = null): ObjectManager
-    {
+    public function findManager(
+        ManagerRegistry $registry,
+        string $entityClass,
+        ?string $persistentManager = null
+    ): ObjectManager {
         if ($persistentManager !== null) {
-            return $this->registry->getManager($persistentManager);
+            return $registry->getManager($persistentManager);
         }
 
-        $entityManager = $this->registry->getManager($this->registry->getDefaultManagerName());
-
-        /** @var EntityManagerInterface $manager */
-        foreach ($this->registry->getManagers() as $name => $manager) {
-            if ($name === $this->registry->getDefaultManagerName()) {
+        foreach ($registry->getManagers() as $name => $manager) {
+            assert($manager instanceof EntityManagerInterface);
+            if ($name === $registry->getDefaultManagerName()) {
                 continue;
             }
 
             $namespaces = $manager->getConfiguration()->getEntityNamespaces();
-
-            if (isset($namespaces[$entityClass])) {
-                $entityManager = $manager;
-                break;
+            if (! isset($namespaces[$entityClass])) {
+                continue;
             }
+
+            return $manager;
         }
 
-        return $entityManager;
+        return $registry->getManager($registry->getDefaultManagerName());
     }
 
     /**
@@ -184,9 +188,9 @@ class EntityExistsValidator extends ConstraintValidator
         }
 
         $this->context->buildViolation($constraint->message)
-                      ->setParameter('%entity%', $constraint->entity)
-                      ->setParameter('%value%', $value)
-                      ->setParameter('%parameters%', implode(', ', $mapping))
-                      ->addViolation();
+            ->setParameter('%entity%', $constraint->entity)
+            ->setParameter('%value%', $value)
+            ->setParameter('%parameters%', implode(', ', $mapping))
+            ->addViolation();
     }
 }
