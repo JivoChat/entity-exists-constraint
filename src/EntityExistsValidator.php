@@ -16,7 +16,6 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 use function array_flip;
 use function array_merge;
-use function assert;
 use function call_user_func_array;
 use function class_exists;
 use function in_array;
@@ -65,8 +64,8 @@ class EntityExistsValidator extends ConstraintValidator
 
         $mapping    = array_merge($primaryKeys, $constraint->mapping);
         $criteria   = $this->makeCriteria($value, array_flip($mapping));
+        /** @var EntityRepository $repository */
         $repository = $entityManager->getRepository($constraint->entity);
-        assert($repository instanceof EntityRepository);
 
         $count = $repository->count($criteria);
 
@@ -111,8 +110,8 @@ class EntityExistsValidator extends ConstraintValidator
             return $registry->getManager($persistentManager);
         }
 
+        /** @var EntityManagerInterface $manager */
         foreach ($registry->getManagers() as $name => $manager) {
-            assert($manager instanceof EntityManagerInterface);
             if ($name === $registry->getDefaultManagerName()) {
                 continue;
             }
