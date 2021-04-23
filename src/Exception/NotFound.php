@@ -10,6 +10,6 @@ final class NotFound extends DomainException
 {
     public static function entity(string $entity): self
     {
-        return new self(sprintf('Entity %s not found', $entity));
+        return new self(sprintf('Entity %s not found', $entity), 404);
     }
 }

@@ -4,9 +4,9 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": "^7.3",
+        "php": "^7.4",
         "symfony/validator": "^3.4 || ^4.4",
-        "doctrine/orm": "^2.4"
+        "doctrine/orm": "^2.6"
     },
     "autoload": {
         "psr-4": {
