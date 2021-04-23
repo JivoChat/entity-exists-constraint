@@ -42,7 +42,7 @@ class EntityExists extends Constraint
     public string $entity = '';
 
     /** @var array<string, string> */
-    public $mapping = [];
+    public array $mapping = [];
 
     public ?string $persistentManager = null;
 
