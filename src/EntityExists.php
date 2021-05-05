@@ -38,7 +38,7 @@ use Symfony\Component\Validator\Constraint;
 class EntityExists extends Constraint
 {
     /** @var string */
-    public $message = 'Entity "%entity%" with parameter "%value%" does not exist.';
+    public $message = 'Entity "%entity%" with parameter "%value%" does not exist.###';
 
     /** @var string */
     public $entity = '';
